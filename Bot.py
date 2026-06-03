@@ -9,7 +9,6 @@ YOUR_CHAT_ID = 5306025504
 
 app = Flask(__name__)
 
-# બોટ શરૂ થાય ત્યારે મેસેજ મોકલવાનું ફંક્શન
 async def post_init(application: Application):
     await application.bot.send_message(chat_id=YOUR_CHAT_ID, text="હું તમારી શું મદદ કરી શકું !!!")
 
@@ -18,7 +17,6 @@ async def handle_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     message = update.message
 
-    # 1. જો મેસેજ તમારા તરફથી આવ્યો હોય
     if chat.id == YOUR_CHAT_ID and message.reply_to_message:
         original_text = message.reply_to_message.text
         try:
@@ -26,10 +24,9 @@ async def handle_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await context.bot.send_message(chat_id=target_id, text=message.text)
             await message.reply_text('✅ મેસેજ પહોંચી ગયો!')
         except:
-            await message.reply_text('❌ મેસેજ ન મોકલી શકાયો. ખાતરી કરો કે તમે ID વાળા મેસેજ પર જ રિપ્લાય આપ્યો છે.')
+            await message.reply_text('❌ મેસેજ ન મોકલી શકાયો.')
         return
 
-    # 2. જો મેસેજ બીજા કોઈ યુઝરનો હોય
     if chat.id != YOUR_CHAT_ID:
         user_info = f"👤 નામ: {user.first_name}\n🆔 ID: {user.id}\n💬 મેસેજ: {message.text}"
         await context.bot.send_message(chat_id=YOUR_CHAT_ID, text=user_info)
@@ -45,9 +42,9 @@ def run_flask():
 if __name__ == "__main__":
     Thread(target=run_flask).start()
     
-    # post_init અહીં ઉમેર્યું છે
     app_bot = ApplicationBuilder().token(TOKEN).post_init(post_init).build()
     
     app_bot.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_all))
-    app_bot.bot.delete_webhook(drop_pending_updates=True)
+    
+    # અહીં 'delete_webhook' ને કાઢી નાખ્યું છે જેથી ભૂલ ન આવે
     app_bot.run_polling()
