@@ -4,7 +4,7 @@ from threading import Thread
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes, Application, CommandHandler
 from telegram import Update
 
-TOKEN = '8835968464:AAEgKB1vwE2S9cy2ziv5VT6jII1iNuZuxQ'
+TOKEN = '8835968464:AAE1VshLpK1WZUwnXeh2AqkIZwADv01fkGg'
 YOUR_CHAT_ID = 5306025504
 
 app = Flask(__name__)
