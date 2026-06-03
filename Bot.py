@@ -12,7 +12,7 @@ GROUP_ID = -1003912250139
 app = Flask(__name__)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("બોટ સક્રિય છે અને કામ કરી રહ્યો છે!")
+    await update.message.reply_text("હું તમારી શું મદદ કરી શકું !!!")
 
 async def handle_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat = update.effective_chat
