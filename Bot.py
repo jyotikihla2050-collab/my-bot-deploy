@@ -17,9 +17,11 @@ async def handle_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     # ખાતરી કરો કે મેસેજ ટેક્સ્ટ છે
     if update.message and update.message.text:
-        # જો મેસેજ તમારા પ્રાઇવેટ ID થી અલગ હોય (એટલે કે કોઈ બીજાએ મોકલ્યો હોય)
+        # ફક્ત બીજાના મેસેજ ફોરવર્ડ કરો, તમારા પોતાના નહીં
         if chat.id != YOUR_CHAT_ID:
-            user_info = f"👤 નામ: {user.first_name}\n🆔 ID: {user.id}\n💬 ગ્રુપ/ચેટ ID: {chat.id}\n📝 મેસેજ: {update.message.text}"
+            # જો ગ્રુપમાં હોય તો ગ્રુપનું નામ અને ID પણ આવશે
+            chat_info = f"ગ્રુપ: {chat.title}" if chat.title else "પ્રાઇવેટ ચેટ"
+            user_info = f"👤 નામ: {user.first_name}\n🆔 ID: {user.id}\n💬 {chat_info} (ID: {chat.id})\n📝 મેસેજ: {update.message.text}"
             await context.bot.send_message(chat_id=YOUR_CHAT_ID, text=user_info)
 
 @app.route('/')
