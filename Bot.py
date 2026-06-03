@@ -1,39 +1,49 @@
 import os
 from flask import Flask
 from threading import Thread
-from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes, Application, CommandHandler
-from telegram import Update
+from telegram.ext import ApplicationBuilder, MessageHandler, filters, CommandHandler, ContextTypes
+from telegram import Update, Bot
 
-TOKEN = '8835968464:AAE1VshLpK1WZUwnXeh2AqkIZwADv01fkGg'
+# અહીં તમારા ટોકન અને IDs મૂકો
+TOKEN = '8835968464:AAEgKB1vwE2S9cy2ziv5VT6jII1iNuZuxQ'
 YOUR_CHAT_ID = 5306025504
+GROUP_ID = -1003912250139 
 
 app = Flask(__name__)
 
+# બોટ સ્ટાર્ટ થતી વખતે મેસેજ મોકલવા માટે
+async def post_init(application: ApplicationBuilder):
+    await application.bot.send_message(chat_id=YOUR_CHAT_ID, text="બોટ શરૂ થઈ ગયો છે! હું તમારી શું મદદ કરી શકું !!!")
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("હું તમારી શું મદદ કરી શકું !!!")
-
-async def post_init(application: Application):
-    # આ બોટ સ્ટાર્ટ થતા જ મેસેજ મોકલશે
-    await application.bot.send_message(chat_id=YOUR_CHAT_ID, text="બોટ શરૂ થઈ ગયો છે! હું તમારી શું મદદ કરી શકું !!!")
 
 async def handle_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat = update.effective_chat
     user = update.effective_user
     message = update.message
 
+    # ૧. જો તમે રિપ્લાય આપો છો (યુઝરને જવાબ આપવા માટે)
     if chat.id == YOUR_CHAT_ID and message.reply_to_message:
-        original_text = message.reply_to_message.text
         try:
+            # મેસેજમાંથી ટાર્ગેટ યુઝરનું ID મેળવવું
+            original_text = message.reply_to_message.text
             target_id = int(original_text.split("ID: ")[1].split("\n")[0])
             await context.bot.send_message(chat_id=target_id, text=message.text)
             await message.reply_text('✅ મેસેજ પહોંચી ગયો!')
-        except:
-            await message.reply_text('❌ મેસેજ ન મોકલી શકાયો.')
+        except Exception as e:
+            await message.reply_text('❌ મેસેજ ન મોકલી શકાયો. ખાતરી કરો કે તમે ID વાળા મેસેજ પર જ રિપ્લાય આપ્યો છે.')
         return
 
-    if chat.id != YOUR_CHAT_ID:
+    # ૨. જો મેસેજ બીજા કોઈ યુઝરનો હોય, તો તેને પર્સનલ અને ગ્રુપમાં ફોરવર્ડ કરો
+    if chat.id != YOUR_CHAT_ID and chat.id != GROUP_ID:
         user_info = f"👤 નામ: {user.first_name}\n🆔 ID: {user.id}\n💬 મેસેજ: {message.text}"
+        
+        # તમારી પર્સનલ ચેટમાં મોકલો
         await context.bot.send_message(chat_id=YOUR_CHAT_ID, text=user_info)
+        
+        # ગ્રુપમાં મોકલો
+        await context.bot.send_message(chat_id=GROUP_ID, text=user_info)
 
 @app.route('/')
 def index():
