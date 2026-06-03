@@ -10,9 +10,8 @@ GROUP_ID = -1003912250139
 
 app = Flask(__name__)
 
-# બોટ સ્ટાર્ટ થતી વખતે મેસેજ મોકલવા માટે
 async def post_init(application):
-    await application.bot.send_message(chat_id=YOUR_CHAT_ID, text="બોટ શરૂ થઈ ગયો છે!")
+    await application.bot.send_message(chat_id=YOUR_CHAT_ID, text="બોટ તૈયાર છે!")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("હું તમારી શું મદદ કરી શકું !!!")
@@ -22,7 +21,7 @@ async def handle_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     message = update.message
 
-    # ૧. જો તમે રિપ્લાય આપો છો (યુઝરને જવાબ આપવા માટે)
+    # ૧. જો તમે બોટને રિપ્લાય આપો છો (યુઝરને જવાબ આપવા માટે)
     if chat.id == YOUR_CHAT_ID and message.reply_to_message:
         try:
             original_text = message.reply_to_message.text
@@ -33,19 +32,16 @@ async def handle_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await message.reply_text('❌ રિપ્લાય ન મોકલી શકાયો.')
         return
 
-    # ૨. જો મેસેજ ગ્રુપમાંથી આવ્યો હોય તો લૂપ ટાળવા માટે અહીંથી જ બહાર નીકળી જાઓ
+    # ૨. જો મેસેજ ગ્રુપમાંથી આવ્યો હોય: તો તેને તમારી પર્સનલ ચેટમાં પણ મોકલો
     if chat.id == GROUP_ID:
+        # ફક્ત તમારી પર્સનલ ચેટમાં મેસેજ ફોરવર્ડ કરો
+        await context.bot.send_message(chat_id=YOUR_CHAT_ID, text=f"ગ્રુપમાં નવો મેસેજ:\n👤 નામ: {user.first_name}\n💬 મેસેજ: {message.text}")
         return
 
-    # ૩. જો મેસેજ બીજા કોઈ યુઝરનો હોય, તો તેને પર્સનલ અને ગ્રુપમાં ફોરવર્ડ કરો
+    # ૩. જો મેસેજ બોટ (પર્સનલ ચેટ) માંથી આવ્યો હોય: તો તેને ફક્ત તમારી પાસે રાખો (ગ્રુપમાં નહીં)
     if chat.id != YOUR_CHAT_ID:
         user_info = f"👤 નામ: {user.first_name}\n🆔 ID: {user.id}\n💬 મેસેજ: {message.text}"
-        
-        # તમારી પર્સનલ ચેટમાં મોકલો
         await context.bot.send_message(chat_id=YOUR_CHAT_ID, text=user_info)
-        
-        # ગ્રુપમાં મોકલો
-        await context.bot.send_message(chat_id=GROUP_ID, text=user_info)
 
 @app.route('/')
 def index():
@@ -57,11 +53,8 @@ def run_flask():
 
 if __name__ == "__main__":
     Thread(target=run_flask).start()
-    
     app_bot = ApplicationBuilder().token(TOKEN).post_init(post_init).build()
-    
     app_bot.add_handler(CommandHandler("start", start))
     app_bot.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_all))
-    
-    print("Bot is polling...")
+    print("Bot is running...")
     app_bot.run_polling(drop_pending_updates=True)
