@@ -44,5 +44,5 @@ if __name__ == "__main__":
     
     print("બોટ હવે સક્રિય છે!")
     # આ લાઈન તમારી app_bot.run_polling() ની પહેલાં મૂકો
-app_bot.bot.delete_webhook(drop_pending_updates=True)
+    app_bot.bot.delete_webhook(drop_pending_updates=True)
     app_bot.run_polling()
