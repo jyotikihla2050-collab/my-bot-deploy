@@ -43,4 +43,6 @@ if __name__ == "__main__":
     app_bot.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_all))
     
     print("બોટ હવે સક્રિય છે!")
+    # આ લાઈન તમારી app_bot.run_polling() ની પહેલાં મૂકો
+app_bot.bot.delete_webhook(drop_pending_updates=True)
     app_bot.run_polling()
