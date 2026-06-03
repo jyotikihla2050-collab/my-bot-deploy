@@ -4,7 +4,7 @@ from threading import Thread
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, CommandHandler, ContextTypes
 from telegram import Update
 
-TOKEN = '8835968464:AAEgKB1vwE2S9cy2ziv5VT6jII1iNuZuxQ'
+TOKEN = '8835968464:AAGCNHImpTnbu8IGLJcO94Vm_r9DHsf73Gw'
 YOUR_CHAT_ID = 5306025504
 GROUP_ID = -1003912250139 
 
