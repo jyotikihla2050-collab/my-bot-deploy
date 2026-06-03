@@ -5,7 +5,7 @@ from telegram.ext import ApplicationBuilder, MessageHandler, filters, CommandHan
 from telegram import Update
 
 # તમારા ટોકન અને IDs અહીં સાચા છે તેની ખાતરી કરી લેવી
-TOKEN = '8835968464:AAEgKB1vwE2S9cy2ziv5VT6jII1iNuZuxQ'
+TOKEN = '8835968464:AAFMTRlUlkFo2gcOfApjaFGaQDqPSU1-HT8'
 YOUR_CHAT_ID = 5306025504
 GROUP_ID = -1003912250139 
 
