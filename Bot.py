@@ -1,31 +1,37 @@
 import os
-import logging
 from flask import Flask
 from threading import Thread
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes, CommandHandler
 from telegram import Update
 
-# તમારા બોટનો ટોકન અને તમારું Chat ID
 TOKEN = '8835968464:AAHa0sZGbmmQrYQa8UXbwHIeeuwv40G68AA'
 YOUR_CHAT_ID = 5306025504
 
-# લોગિંગ ચાલુ કરો જેથી તમે એરર જોઈ શકો
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-
 app = Flask(__name__)
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("નમસ્કાર! હું તમારી શું મદદ કરી શકું?")
 
 async def handle_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat = update.effective_chat
     user = update.effective_user
+    message = update.message
     
-    if update.message and update.message.text:
-        # ફક્ત બીજાના મેસેજ તમને મોકલવા માટે
-        if chat.id != YOUR_CHAT_ID:
-            user_info = f"👤 નામ: {user.first_name}\n🆔 ID: {user.id}\n💬 ચેટ ID: {chat.id}\n📝 મેસેજ: {update.message.text}"
-            await context.bot.send_message(chat_id=YOUR_CHAT_ID, text=user_info)
+    # 1. જો મેસેજ તમારા તરફથી આવ્યો હોય (તમે કોઈને રિપ્લાય આપો છો)
+    if chat.id == YOUR_CHAT_ID and message.reply_to_message:
+        # રિપ્લાયમાં રહેલા યુઝરનું ID શોધો
+        original_text = message.reply_to_message.text
+        # અહીં આપણે મેસેજમાંથી ID કાઢવાનો પ્રયત્ન કરીશું (જે તમે ફોરવર્ડ કરેલા મેસેજમાં મોકલી હતી)
+        try:
+            # આ તમારી ફોર્મેટમાંથી ID શોધી કાઢશે
+            target_id = int(original_text.split("🆔 ID: ")[1].split("\n")[0])
+            await context.bot.send_message(chat_id=target_id, text=message.text)
+            await message.reply_text("✅ મેસેજ પહોંચી ગયો!")
+        except:
+            await message.reply_text("❌ મેસેજ ન મોકલી શકાયો. ખાતરી કરો કે તમે ID વાળા મેસેજ પર જ રિપ્લાય આપ્યો છે.")
+        return
+
+    # 2. જો મેસેજ બીજા કોઈ યુઝરનો હોય (તો તમને ફોરવર્ડ કરો)
+    if chat.id != YOUR_CHAT_ID:
+        user_info = f"👤 નામ: {user.first_name}\n🆔 ID: {user.id}\n💬 ચેટ ID: {chat.id}\n📝 મેસેજ: {message.text}"
+        await context.bot.send_message(chat_id=YOUR_CHAT_ID, text=user_info)
 
 @app.route('/')
 def index():
@@ -37,12 +43,7 @@ def run_flask():
 
 if __name__ == "__main__":
     Thread(target=run_flask).start()
-    
     app_bot = ApplicationBuilder().token(TOKEN).build()
-    
-    app_bot.add_handler(CommandHandler("start", start))
     app_bot.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_all))
-    
-    # જૂના કનેક્શન સાફ કરીને બોટ ચાલુ કરો
     app_bot.bot.delete_webhook(drop_pending_updates=True)
     app_bot.run_polling()
