@@ -4,8 +4,7 @@ from threading import Thread
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes, Application
 from telegram import Update
 
-# અહીં તમારો નવો ટોકન મૂકવો (જૂનો ટોકન સુરક્ષિત નથી)
-TOKEN = 'તમારો_નવો_ટોકન_અહીં_મૂકો'
+TOKEN = '8835968464:AAHa8sZGbmrQrYQa0UXbwHIeeuw40G6IAA'
 YOUR_CHAT_ID = 5306025504
 
 app = Flask(__name__)
