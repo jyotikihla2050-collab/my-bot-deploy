@@ -5,7 +5,7 @@ from telegram.ext import ApplicationBuilder, MessageHandler, filters, CommandHan
 from telegram import Update, Bot
 
 # અહીં તમારા ટોકન અને IDs મૂકો
-TOKEN = '8835968464:AAEgKB1vwE2S9cy2ziv5VT6jII1iNuZuxQ'
+TOKEN = '8835968464:AAEYm8zgXFFmfXDGk16WpNkSrYSulfu1yXI'
 YOUR_CHAT_ID = 5306025504
 GROUP_ID = -1003912250139 
 
