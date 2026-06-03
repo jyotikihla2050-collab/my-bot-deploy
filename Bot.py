@@ -1,46 +1,49 @@
-import logging
+import os
+from flask import Flask
+from threading import Thread
+from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes, CommandHandler
 from telegram import Update
-from telegram.ext import ApplicationBuilder, MessageHandler, CommandHandler, filters, ContextTypes
 
-# લૉગિંગ સેટઅપ
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+TOKEN = '8835968464:AAHa8sZGbmrQrYQa0UXbwHIeeuw40G6IAA'
+YOUR_CHAT_ID = 5306025504
 
-# અહીં તમારા ટોકન અને ID સીધા લખો
-TOKEN = '8035968464:AAHa...'  # તમારું અસલી ટોકન અહીં મૂકો
-MY_CHAT_ID = 5306025504
-GROUP_CHAT_ID = -1003912250139
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("બોટ સક્રિય છે!")
+app = Flask(__name__)
 
 async def handle_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat = update.effective_chat
+    user = update.effective_user
     message = update.message
-    
-    if not message or not message.text:
+
+    # 1. જો મેસેજ તમારા તરફથી આવ્યો હોય (તમે કોઈને રિપ્લાય આપો છો)
+    if chat.id == YOUR_CHAT_ID and message.reply_to_message:
+        # રિપ્લાયમાં લખેલ ID શોધો
+        original_text = message.reply_to_message.text
+        # અહીં આપણે મેસેજમાંથી ID કાઢવાનો પ્રયત્ન કરીશું (જો તમે ફોરવર્ડ કરેલા મેસેજ પર જ રિપ્લાય આપશો)
+        try:
+            # આ તમારી ફોર્મેટમાંથી ID શોધી કાઢશે
+            target_id = int(original_text.split("ID: ")[1].split("\n")[0])
+            await context.bot.send_message(chat_id=target_id, text=message.text)
+            await message.reply_text('✅ મેસેજ પહોંચી ગયો!')
+        except:
+            await message.reply_text('❌ મેસેજ ન મોકલી શકાયો. ખાતરી કરો કે તમે ID વાળા મેસેજ પર જ રિપ્લાય આપ્યો છે.')
         return
 
-    # ૧. જો તમે તમારી પર્સનલ ચેટમાં રિપ્લાય આપો છો
-    if chat.id == MY_CHAT_ID:
-        if message.reply_to_message:
-            try:
-                await context.bot.send_message(chat_id=GROUP_CHAT_ID, text=message.text)
-                await message.reply_text("✅ મેસેજ ગ્રુપમાં મોકલાઈ ગયો છે!")
-            except Exception as e:
-                await message.reply_text(f"❌ ભૂલ આવી: {e}")
-        return
+    # 2. જો મેસેજ બીજા કોઈ યુઝરનો હોય (તો તમે ફોરવર્ડ કરો)
+    if chat.id != YOUR_CHAT_ID:
+        user_info = f"👤 નામ: {user.first_name}\n🆔 ID: {user.id}\n💬 મેસેજ: {message.text}"
+        await context.bot.send_message(chat_id=YOUR_CHAT_ID, text=user_info)
 
-    # ૨. જો કોઈ બીજાએ ગ્રુપમાં મેસેજ કર્યો હોય
-    if chat.id == GROUP_CHAT_ID:
-        user_info = f"👤 {update.effective_user.first_name} એ કહ્યું:\n\n{message.text}"
-        await context.bot.send_message(chat_id=MY_CHAT_ID, text=user_info)
+@app.route('/')
+def index():
+    return "Bot is running!"
 
-if __name__ == '__main__':
-    # બોટ એપ્લિકેશન તૈયાર કરો
-    app = ApplicationBuilder().token(TOKEN).build()
-    
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_all))
-    
-    print("Bot is running...")
-    app.run_polling()
+def run_flask():
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
+
+if __name__ == "__main__":
+    Thread(target=run_flask).start()
+    app_bot = ApplicationBuilder().token(TOKEN).build()
+    app_bot.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_all))
+    app_bot.bot.delete_webhook(drop_pending_updates=True)
+    app_bot.run_polling()
