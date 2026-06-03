@@ -1,50 +1,26 @@
 import os
 from flask import Flask
-from threading import Thread
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
 from telegram import Update
 
-# તમારો ટોકન અને ID (અહીં તમારો સાચો ટોકન અને ID રાખજો)
 TOKEN = '8835968464:AAHa0sZGbmmQrYQa8UXbwHIeeuwv40G68AA'
 YOUR_CHAT_ID = 5306025504
 
-# બોટનું મેઈન ફંક્શન
+app = Flask(__name__)
+
+# મુખ્ય બોટ ફંક્શન
 async def handle_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat = update.effective_chat
     user = update.effective_user
-    
-    # જો મેસેજ તમારી સાથે હોય (Private) અથવા ગ્રુપમાં હોય
     if update.message and update.message.text:
-        # જો તમે ફોરવર્ડ કરેલા મેસેજ પર રિપ્લાય આપો છો
-        if update.message.reply_to_message:
-            try:
-                # મેસેજમાંથી ID શોધો
-                text = update.message.reply_to_message.text
-                user_id = text.split("ID: ")[1].split("\n")[0]
-                await context.bot.send_message(chat_id=user_id, text=update.message.text)
-            except:
-                await update.message.reply_text("ભૂલ: આ રિપ્લાયમાં ID મળી નથી.")
-        else:
-            # કોઈ પણ નવો મેસેજ આવે તો તે તમારી પાસે ફોરવર્ડ કરો
-            user_info = f"નામ: {user.first_name}\nID: {user.id}\nચેટ ID: {chat.id}\nમેસેજ: {update.message.text}"
-            await context.bot.send_message(chat_id=YOUR_CHAT_ID, text=user_info)
+        user_info = f"નામ: {user.first_name}\nID: {user.id}\nચેટ ID: {chat.id}\nમેસેજ: {update.message.text}"
+        await context.bot.send_message(chat_id=YOUR_CHAT_ID, text=user_info)
 
-# Flask વેબ સર્વર
-app = Flask(__name__)
 @app.route('/')
-def index():
+def home():
     return "Bot is running!"
 
-def run_flask():
+if __name__ == "__main__":
+    # બોટ અને ફ્લાસ્ક બંનેને એકસાથે ચલાવવા માટે
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
-
-if __name__ == "__main__":
-    # ફ્લાસ્કને અલગ થ્રેડમાં ચલાવો
-    Thread(target=run_flask).start()
-    
-    # ટેલિગ્રામ બોટ ચલાવો
-    app_bot = ApplicationBuilder().token(TOKEN).build()
-    app_bot.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_all))
-    print("બોટ હવે તૈયાર છે!")
-    app_bot.run_polling()
