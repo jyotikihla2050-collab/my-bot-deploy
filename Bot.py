@@ -44,12 +44,16 @@ def run_flask():
     app.run(host="0.0.0.0", port=port)
 
 if __name__ == "__main__":
+    # ફ્લાસ્ક સર્વર ચાલુ કરો
     Thread(target=run_flask).start()
     
-    # post_init અને start કમાન્ડ હેન્ડલર ઉમેર્યા છે
+    # બોટ એપ્લિકેશન તૈયાર કરો
     app_bot = ApplicationBuilder().token(TOKEN).post_init(post_init).build()
     
+    # હેન્ડલર્સ ઉમેરો
     app_bot.add_handler(CommandHandler("start", start))
     app_bot.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_all))
     
-    app_bot.run_polling()
+    # પોલિંગ શરૂ કરો
+    print("Bot is polling...")
+    app_bot.run_polling(drop_pending_updates=True)
