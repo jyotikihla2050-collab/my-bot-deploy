@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 # ૧. સ્ટાર્ટ કમાન્ડ
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("નમસ્તે! હું બોટ છું. હું તમારા મેસેજ ફોરવર્ડ કરવામાં મદદ કરીશ.")
+    await update.message.reply_text("નમસ્તે! હું બોટ છું. તમારી શું મદદ કરી શકું.")
 
 # ૨. મુખ્ય હેન્ડલર (બધા મેસેજ માટે)
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
