@@ -34,7 +34,7 @@ async def send_and_delete(context: ContextTypes.DEFAULT_TYPE, chat_id: int, from
 
 # ૧. સ્ટાર્ટ કમાન્ડ
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("નમસ્તે! આ બોટમાં સેલ્ફ-ડિસ્ટ્રક્ટ મેસેજ (૧૦ સેકન્ડ) ચાલુ છે.")
+    await update.message.reply_text("નમસ્તે! હું બોટ છું. તમારી શું મદદ કરી શકું.")
 
 # ૨. મુખ્ય હેન્ડલર
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
