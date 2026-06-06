@@ -97,11 +97,11 @@ def run_flask():
 if __name__ == "__main__":
     Thread(target=run_flask).start()
     
-    # અહીં filters માં TEXT ની સાથે PHOTO, VIDEO અને DOCUMENT ઉમેર્યા છે
     app_bot = ApplicationBuilder().token(TOKEN).build()
     app_bot.add_handler(CommandHandler("start", start))
     
-    media_filters = (filters.TEXT | filters.PHOTO | filters.VIDEO | filters.DOCUMENT)
+    # અહીં filters.DOCUMENT ને બદલે filters.Document.ALL કર્યું છે
+    media_filters = (filters.TEXT | filters.PHOTO | filters.VIDEO | filters.Document.ALL)
     app_bot.add_handler(MessageHandler(media_filters & (~filters.COMMAND), handle_all))
     
     print("Bot is running...")
