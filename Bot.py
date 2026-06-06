@@ -24,7 +24,7 @@ async def handle_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         # જો મેસેજ ગ્રુપમાંથી આવ્યો હોય, તો જવાબ ગ્રુપમાં મોકલો
         if "ગ્રુપમાં નવો મેસેજ:" in original_text:
-            reply_text = f":\n{message.text or message.caption or ''}"
+            reply_text = f"\n{message.text or message.caption or ''}"
             
             if message.photo:
                 await context.bot.send_photo(chat_id=GROUP_ID, photo=message.photo[-1].file_id, caption=reply_text)
